@@ -25,11 +25,20 @@ def Main():
         MaxNumber = 10
         MaxTarget = 50
         Targets = CreateTargets(MaxNumberOfTargets, MaxTarget)
-    NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
-    PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber)
+
+    ChooseNumber = input("Press y to choose own allowed numbers, anything else for randomly generated allowed numbers: ").lower()
+    CustomNumbers = False
+    print()
+    if ChooseNumber == "y":
+        NumbersAllowed = ChooseNumbers(NumbersAllowed, MaxNumber)
+        CustomNumbers = True
+    else:
+        NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
+        CustomNumbers = False
+    PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber, CustomNumbers)
     input()
 
-def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
+def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber, CustomNumbers):
     Score = 0
     GameOver = False
     while not GameOver:
@@ -42,7 +51,7 @@ def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
                 IsTarget, Score = CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score)
                 if IsTarget:
                     NumbersAllowed = RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed)
-                    NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
+                    NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber, CustomNumbers)
         Score -= 1
         if Targets[0] != -1:
             GameOver = True
@@ -215,8 +224,18 @@ def CreateTargets(SizeOfTargets, MaxTarget):
         Targets.append(GetTarget(MaxTarget))
     return Targets
 
-def FillNumbers(NumbersAllowed, TrainingGame, MaxNumber):
-    if TrainingGame:
+def ChooseNumbers(NumbersAllowed, MaxNumber):
+    for Index in range(5):
+        Number = int(input(f"Enter Number {Index + 1} (between 1 and {MaxNumber}): "))
+        while Number < 1 or Number > MaxNumber:
+            print('Invalid number!')
+            Number = int(input(f"Enter Number {Index + 1} (between 1 and {MaxNumber}): "))
+        NumbersAllowed.append(math.floor(Number))
+    print()
+    return NumbersAllowed
+
+def FillNumbers(NumbersAllowed, TrainingGame, MaxNumber, CustomNumbers):
+    if TrainingGame and not CustomNumbers:
         return [2, 3, 2, 8, 512]
     else:
         while len(NumbersAllowed) < 5:
