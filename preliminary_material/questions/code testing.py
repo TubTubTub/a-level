@@ -25,20 +25,11 @@ def Main():
         MaxNumber = 10
         MaxTarget = 50
         Targets = CreateTargets(MaxNumberOfTargets, MaxTarget)
-
-    ChooseNumber = input("Press y to choose own allowed numbers, anything else for randomly generated allowed numbers: ").lower()
-    CustomNumbers = False
-    print()
-    if ChooseNumber == "y":
-        NumbersAllowed = ChooseNumbers(NumbersAllowed, MaxNumber)
-        CustomNumbers = True
-    else:
-        NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
-        CustomNumbers = False
-    PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber, CustomNumbers)
+    NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
+    PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber)
     input()
 
-def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber, CustomNumbers):
+def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
     Score = 0
     GameOver = False
     while not GameOver:
@@ -51,7 +42,7 @@ def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber, Custom
                 IsTarget, Score = CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score)
                 if IsTarget:
                     NumbersAllowed = RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed)
-                    NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber, CustomNumbers)
+                    NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
         Score -= 1
         if Targets[0] != -1:
             GameOver = True
@@ -189,32 +180,25 @@ def EvaluateRPN(UserInputInRPN):
         return -1
 
 def GetNumberFromUserInput(UserInput, Position):
-    Number = ""
-    MoreDigits = True
-    while MoreDigits:
-        if not(re.search("[0-9]", str(UserInput[Position])) is None):
-            Number += UserInput[Position]
-        else:
-            MoreDigits = False
-        Position += 1
-        if Position == len(UserInput):
-            MoreDigits = False
-    if Number == "":
-        return -1, Position
+    Search = re.search("-?[0-9]+", str(UserInput[Position:]))
+    if Search is not None:
+        Indicies = [Index + Position for Index in Search.span()]
+        Number = UserInput[Indicies[0]:Indicies[1]]
+        return int(Number), min(Indicies[1] + 1, len(UserInput))
     else:
-        return int(Number), Position
+       return -1, Position + 1
 
 def CheckIfUserInputValid(UserInput):
-    if re.search("^([0-9]+[\\+\\-\\*\\/])+[0-9]+$", UserInput) is not None:
+    if re.search("^(-?[0-9]+[\\+\\-\\*\\/])+-?[0-9]+$", UserInput) is not None:
         return True
     else:
         return False
 
 def GetTarget(MaxTarget):
-    return random.randint(1, MaxTarget)
+    return random.randint(-MaxTarget, MaxTarget)
 
 def GetNumber(MaxNumber):
-    return random.randint(1, MaxNumber)
+    return random.randint(-MaxNumber, MaxNumber)
 
 def CreateTargets(SizeOfTargets, MaxTarget):
     Targets = []
@@ -224,18 +208,8 @@ def CreateTargets(SizeOfTargets, MaxTarget):
         Targets.append(GetTarget(MaxTarget))
     return Targets
 
-def ChooseNumbers(NumbersAllowed, MaxNumber):
-    for Index in range(5):
-        Number = int(input(f"Enter Number {Index + 1} (between 1 and {MaxNumber}): "))
-        while Number < 1 or Number > MaxNumber:
-            print('Invalid number!')
-            Number = int(input(f"Enter Number {Index + 1} (between 1 and {MaxNumber}): "))
-        NumbersAllowed.append(math.floor(Number))
-    print()
-    return NumbersAllowed
-
-def FillNumbers(NumbersAllowed, TrainingGame, MaxNumber, CustomNumbers):
-    if TrainingGame and not CustomNumbers:
+def FillNumbers(NumbersAllowed, TrainingGame, MaxNumber):
+    if TrainingGame:
         return [2, 3, 2, 8, 512]
     else:
         while len(NumbersAllowed) < 5:
