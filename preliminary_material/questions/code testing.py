@@ -180,25 +180,32 @@ def EvaluateRPN(UserInputInRPN):
         return -1
 
 def GetNumberFromUserInput(UserInput, Position):
-    Search = re.search("-?[0-9]+", str(UserInput[Position:]))
-    if Search is not None:
-        Indicies = [Index + Position for Index in Search.span()]
-        Number = UserInput[Indicies[0]:Indicies[1]]
-        return int(Number), min(Indicies[1] + 1, len(UserInput))
+    Number = ""
+    MoreDigits = True
+    while MoreDigits:
+        if not(re.search("[0-9]", str(UserInput[Position])) is None):
+            Number += UserInput[Position]
+        else:
+            MoreDigits = False
+        Position += 1
+        if Position == len(UserInput):
+            MoreDigits = False
+    if Number == "":
+        return -1, Position
     else:
-       return -1, Position + 1
+        return int(Number), Position
 
 def CheckIfUserInputValid(UserInput):
-    if re.search("^(-?[0-9]+[\\+\\-\\*\\/])+-?[0-9]+$", UserInput) is not None:
+    if re.search("^([0-9]+[\\+\\-\\*\\/])+[0-9]+$", UserInput) is not None:
         return True
     else:
         return False
 
 def GetTarget(MaxTarget):
-    return random.randint(-MaxTarget, MaxTarget)
+    return random.randint(1, MaxTarget)
 
 def GetNumber(MaxNumber):
-    return random.randint(-MaxNumber, MaxNumber)
+    return random.randint(1, MaxNumber)
 
 def CreateTargets(SizeOfTargets, MaxTarget):
     Targets = []
