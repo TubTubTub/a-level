@@ -20,7 +20,7 @@ def Main():
         MaxNumber = 1000
         MaxTarget = 1000
         TrainingGame = True
-        Targets = [-1, -1, -1, -1, -1, 23, 9, 140, 82, 121, 34, 45, 68, 75, 34, 23, 119, 43, 23, 119]
+        Targets = [-1, -1, -1, -1, -1, 12, 9, 140, 82, 121, 34, 45, 68, 75, 34, 12, 119, 43, 640, 119]
     else:
         MaxNumber = 10
         MaxTarget = 50
@@ -36,13 +36,17 @@ def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
         DisplayState(Targets, NumbersAllowed, Score)
         UserInput = input("Enter an expression: ")
         print()
-        if CheckIfUserInputValid(UserInput):
-            UserInputInRPN = ConvertToRPN(UserInput)
-            if CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNumber):
-                IsTarget, Score = CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score)
-                if IsTarget:
-                    NumbersAllowed = RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed)
-                    NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
+
+        UserInputEvaluation, Valid = RPNWithBrackets(UserInput)
+        UserInputWithoutBrackets = UserInput.replace("(", "").replace(")", "")
+        UserInputInRPNWithoutBrackets = ConvertToRPN(UserInputWithoutBrackets)
+
+        if Valid and CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPNWithoutBrackets, MaxNumber):
+            IsTarget, Score = CheckIfUserInputEvaluationIsATarget(Targets, Score, UserInputEvaluation)
+            if IsTarget:
+                NumbersAllowed = RemoveNumbersUsed(UserInputWithoutBrackets, MaxNumber, NumbersAllowed)
+                NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
+
         Score -= 1
         if Targets[0] != -1:
             GameOver = True
@@ -51,8 +55,7 @@ def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
     print("Game over!")
     DisplayScore(Score)
 
-def CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score):
-    UserInputEvaluation = EvaluateRPN(UserInputInRPN)
+def CheckIfUserInputEvaluationIsATarget(Targets, Score, UserInputEvaluation):
     UserInputEvaluationIsATarget = False
     if UserInputEvaluation != -1:
         for Count in range(0, len(Targets)):
@@ -126,6 +129,41 @@ def DisplayTargets(Targets):
         print("|", end = '')
     print()
     print()
+
+def GetSubstring(String):
+    First = -1
+    Stack = 0
+
+    for Index, Char in enumerate(String):
+        if Char == "(" and First == -1:
+            First = Index
+
+        if Char == "(":
+            Stack += 1
+
+        elif Char == ")":
+            Stack -= 1
+
+            if Stack == 0:
+                return String[First + 1 : Index], First, Index
+
+def RPNWithBrackets(UserInput):
+    while "(" in UserInput and ")" in UserInput:
+        Substring, First, Last = GetSubstring(UserInput)
+        Evaluated, Valid = RPNWithBrackets(Substring)
+
+        if Valid is False:
+            return -1, False
+        else:
+            UserInput = UserInput[:First] + str(Evaluated) + UserInput[Last + 1:]
+
+    if not(CheckIfUserInputValid(UserInput)):
+        return -1, False
+
+    StringRPN = ConvertToRPN(UserInput)
+    Evaluated = EvaluateRPN(StringRPN)
+
+    return Evaluated, True
 
 def ConvertToRPN(UserInput):
     Position = 0

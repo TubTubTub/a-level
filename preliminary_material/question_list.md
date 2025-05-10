@@ -46,3 +46,4 @@
 43. Multiple of X. The program should randomly generate a number each turn, e.g. 3 and if the user creates an expression which removes a target which is a multiple of that number, give them a bonus of their score equal to the multiple (in this case, 3 extra score)
 44. Prime time punch. If the completed target was a prime number, destroy the targets on either side of the prime number (count them as scored)
 45. Allow the user to specify the highest number within the five NumbersAllowed
+46. Validate a user's entry to confirm their choice before accepting an expression
