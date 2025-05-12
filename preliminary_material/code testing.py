@@ -20,7 +20,7 @@ def Main():
         MaxNumber = 1000
         MaxTarget = 1000
         TrainingGame = True
-        Targets = [-1, -1, -1, -1, -1, 12, 9, 140, 82, 121, 34, 45, 68, 75, 34, 23, 119, 43, 23, 119]
+        Targets = [-1, -1, -1, -1, -1, 23, 9, 140, 82, 121, 34, 45, 68, 75, 34, 23, 119, 43, 23, 119]
     else:
         MaxNumber = 10
         MaxTarget = 50
@@ -63,14 +63,11 @@ def CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score):
     return UserInputEvaluationIsATarget, Score
 
 def RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed):
-    SeenNumbers = []
     UserInputInRPN = ConvertToRPN(UserInput)
     for Item in UserInputInRPN:
         if CheckValidNumber(Item, MaxNumber):
-            Item = int(Item)
-            if Item in NumbersAllowed and Item not in SeenNumbers:
-                SeenNumbers.append(Item)
-                NumbersAllowed.remove(Item)
+            if int(Item) in NumbersAllowed:
+                NumbersAllowed.remove(int(Item))
     return NumbersAllowed
 
 def UpdateTargets(Targets, TrainingGame, MaxTarget):
@@ -88,8 +85,11 @@ def CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNu
     for Item in NumbersAllowed:
         Temp.append(Item)
     for Item in UserInputInRPN:
-        if CheckValidNumber(Item, MaxNumber) and int(Item) not in Temp:
-            return False
+        if CheckValidNumber(Item, MaxNumber):
+            if int(Item) in Temp:
+                Temp.remove(int(Item))
+            else:
+                return False
     return True
 
 def CheckValidNumber(Item, MaxNumber):
@@ -219,8 +219,12 @@ def FillNumbers(NumbersAllowed, TrainingGame, MaxNumber):
     if TrainingGame:
         return [2, 3, 2, 8, 512]
     else:
+
         while len(NumbersAllowed) < 5:
-            NumbersAllowed.append(GetNumber(MaxNumber))
+            Number = GetNumber(MaxNumber)
+            if Number not in NumbersAllowed:
+                NumbersAllowed.append(Number)
+
         return NumbersAllowed
 
 if __name__ == "__main__":
