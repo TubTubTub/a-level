@@ -219,12 +219,8 @@ def FillNumbers(NumbersAllowed, TrainingGame, MaxNumber):
     if TrainingGame:
         return [2, 3, 2, 8, 512]
     else:
-
         while len(NumbersAllowed) < 5:
-            Number = GetNumber(MaxNumber)
-            if Number not in NumbersAllowed:
-                NumbersAllowed.append(Number)
-
+            NumbersAllowed.append(GetNumber(MaxNumber))
         return NumbersAllowed
 
 if __name__ == "__main__":
