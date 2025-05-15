@@ -20,7 +20,7 @@ def Main():
         MaxNumber = 1000
         MaxTarget = 1000
         TrainingGame = True
-        Targets = [-1, -1, -1, -1, -1, 23, 9, 140, 82, 121, 34, 45, 68, 75, 34, 23, 119, 43, 23, 119]
+        Targets = [5, -1, -1, -1, -1, 5, 9, 140, 82, 121, 34, 45, 68, 75, 34, 5, 119, 43, 23, 5]
     else:
         MaxNumber = 10
         MaxTarget = 50
@@ -51,6 +51,13 @@ def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
     print("Game over!")
     DisplayScore(Score)
 
+def IsPrime(Target):
+    for Int in range(2, int(Target ** 0.5) + 1):
+        if Target % Int == 0:
+            return False
+
+    return True
+
 def CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score):
     UserInputEvaluation = EvaluateRPN(UserInputInRPN)
     UserInputEvaluationIsATarget = False
@@ -58,8 +65,17 @@ def CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score):
         for Count in range(0, len(Targets)):
             if Targets[Count] == UserInputEvaluation:
                 Score += 2
-                Targets[Count] = -1
                 UserInputEvaluationIsATarget = True
+
+                if IsPrime(Targets[Count]):
+                    if Count + 1 < len(Targets) and Targets[Count + 1] != -1:
+                        Score += 2
+                        Targets[Count + 1] = -1
+                    if Count - 1 >= 0 and Targets[Count - 1] != -1:
+                        Score += 2
+                        Targets[Count - 1] = -1
+                Targets[Count] = -1
+
     return UserInputEvaluationIsATarget, Score
 
 def RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed):
