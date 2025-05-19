@@ -20,7 +20,7 @@ def Main():
         MaxNumber = 1000
         MaxTarget = 1000
         TrainingGame = True
-        Targets = [-1, -1, -1, -1, -1, 4, 9, 140, 82, 121, 34, 45, 68, 75, 34, 4, 119, 43, 23, 119]
+        Targets = [-1, -1, -1, -1, -1, 4, 9, 140, 82, 121, 34, 45, 68, 75, 34, 4, 119, 43, 10002, 119]
     else:
         MaxNumber = 10
         MaxTarget = 50
@@ -89,11 +89,10 @@ def CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNu
     for Item in NumbersAllowed:
         Temp.append(Item)
     for Item in UserInputInRPN:
-        if CheckValidNumber(Item, MaxNumber):
-            if int(Item) in Temp:
-                Temp.remove(int(Item))
-            else:
-                return False
+        if CheckValidNumber(Item, MaxNumber) and int(Item) in Temp:
+            Temp.remove(int(Item))
+        else:
+            return False
     return True
 
 def CheckValidNumber(Item, MaxNumber):
