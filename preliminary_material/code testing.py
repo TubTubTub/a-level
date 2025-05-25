@@ -20,11 +20,12 @@ def Main():
         MaxNumber = 1000
         MaxTarget = 1000
         TrainingGame = True
-        Targets = [-1, -1, -1, -1, -1, 4, 9, 140, 82, 121, 34, 45, 68, 75, 34, 5, 119, 43, 23, 119]
+        Targets = [-1, -1, -1, -1, -1, 23, 9, 140, 82, 121, 34, 45, 68, 75, 34, 23, 119, 43, 23, 119]
     else:
-        MaxNumber = 10
+        MaxNumber = int(input("Enter highest number allowed: "))
         MaxTarget = 50
         Targets = CreateTargets(MaxNumberOfTargets, MaxTarget)
+    print()
     NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
     PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber)
     input()
@@ -32,32 +33,17 @@ def Main():
 def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
     Score = 0
     GameOver = False
-    AllNumbersUsed = False
     while not GameOver:
         DisplayState(Targets, NumbersAllowed, Score)
-        if AllNumbersUsed:
-            UserInput = input('You used all available numbers! Enter any target to remove: ')
-        else:
-            UserInput = input("Enter an expression: ")
+        UserInput = input("Enter an expression: ")
         print()
-
-        if AllNumbersUsed and re.match("^[0-9]+$", UserInput):
-            for Count in range(0, len(Targets)):
-                if Targets[Count] == int(UserInput):
-                    Score += 2
-                    Targets[Count] = -1
-            AllNumbersUsed = False
-
-        elif CheckIfUserInputValid(UserInput):
+        if CheckIfUserInputValid(UserInput):
             UserInputInRPN = ConvertToRPN(UserInput)
-            UsedNumbersAllowed, AllNumbersUsed = CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNumber)
-            if UsedNumbersAllowed:
+            if CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNumber):
                 IsTarget, Score = CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score)
                 if IsTarget:
                     NumbersAllowed = RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed)
                     NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
-                else:
-                    AllNumbersUsed = False
         Score -= 1
         if Targets[0] != -1:
             GameOver = True
@@ -104,8 +90,8 @@ def CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNu
             if int(Item) in Temp:
                 Temp.remove(int(Item))
             else:
-                return False, False
-    return True, len(Temp) == 0
+                return False
+    return True
 
 def CheckValidNumber(Item, MaxNumber):
     if re.search("^[0-9]+$", Item) is not None:
@@ -232,7 +218,7 @@ def CreateTargets(SizeOfTargets, MaxTarget):
 
 def FillNumbers(NumbersAllowed, TrainingGame, MaxNumber):
     if TrainingGame:
-        return [1, 1, 1, 1, 1]
+        return [2, 3, 2, 8, 512]
     else:
         while len(NumbersAllowed) < 5:
             NumbersAllowed.append(GetNumber(MaxNumber))
