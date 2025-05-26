@@ -22,10 +22,9 @@ def Main():
         TrainingGame = True
         Targets = [-1, -1, -1, -1, -1, 23, 9, 140, 82, 121, 34, 45, 68, 75, 34, 23, 119, 43, 23, 119]
     else:
-        MaxNumber = int(input("Enter highest number allowed: "))
+        MaxNumber = 10
         MaxTarget = 50
         Targets = CreateTargets(MaxNumberOfTargets, MaxTarget)
-    print()
     NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
     PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber)
     input()
@@ -75,6 +74,15 @@ def UpdateTargets(Targets, TrainingGame, MaxTarget):
     for Count in range (0, len(Targets) - 1):
         Targets[Count] = Targets[Count + 1]
     Targets.pop()
+
+    NumberIndices = [Index for Index, Item in enumerate(Targets) if Item != -1]
+    for Index, Number in enumerate(Targets):
+        if Number == -1:
+            continue
+        else:
+            IndexToSwap = random.choice(NumberIndices)
+            Targets[Index], Targets[IndexToSwap] = Targets[IndexToSwap], Targets[Index]
+
     if TrainingGame:
         Targets.append(Targets[-1])
     else:
