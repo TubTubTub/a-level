@@ -29,38 +29,8 @@ def Main():
     PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber)
     input()
 
-def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
-    Score = 0
-    GameOver = False
-    while not GameOver:
-        DisplayState(Targets, NumbersAllowed, Score)
-        UserInput = input("Enter an expression: ")
-        print()
-        if CheckIfUserInputValid(UserInput):
-            UserInputInRPN = ConvertToRPN(UserInput)
-            if CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNumber):
-                IsTarget, Score = CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score)
-                if IsTarget:
-                    NumbersAllowed = RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed)
-                    NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
-        Score -= 1
-        if Targets[0] != -1:
-            GameOver = True
-        else:
-            Targets = UpdateTargets(Targets, TrainingGame, MaxTarget)
-    print("Game over!")
-    DisplayScore(Score)
 
-def CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score):
-    UserInputEvaluation = EvaluateRPN(UserInputInRPN)
-    UserInputEvaluationIsATarget = False
-    if UserInputEvaluation != -1:
-        for Count in range(0, len(Targets)):
-            if Targets[Count] == UserInputEvaluation:
-                Score += 2
-                Targets[Count] = -1
-                UserInputEvaluationIsATarget = True
-    return UserInputEvaluationIsATarget, Score
+
 
 def RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed):
     UserInputInRPN = ConvertToRPN(UserInput)
@@ -74,15 +44,6 @@ def UpdateTargets(Targets, TrainingGame, MaxTarget):
     for Count in range (0, len(Targets) - 1):
         Targets[Count] = Targets[Count + 1]
     Targets.pop()
-
-    NumberIndices = [Index for Index, Item in enumerate(Targets) if Item != -1]
-    for Index, Number in enumerate(Targets):
-        if Number == -1:
-            continue
-        else:
-            IndexToSwap = random.choice(NumberIndices)
-            Targets[Index], Targets[IndexToSwap] = Targets[IndexToSwap], Targets[Index]
-
     if TrainingGame:
         Targets.append(Targets[-1])
     else:
