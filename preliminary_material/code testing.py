@@ -29,8 +29,45 @@ def Main():
     PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber)
     input()
 
+def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
+    Score = 0
+    GameOver = False
+    ArgumentsCopy = [Score, Targets[::], NumbersAllowed, TrainingGame, MaxTarget, MaxNumber]
 
+    while not GameOver:
+        DisplayState(Targets, NumbersAllowed, Score)
+        UserInput = input("Enter an expression: ")
+        print()
+        if CheckIfUserInputValid(UserInput):
+            UserInputInRPN = ConvertToRPN(UserInput)
+            if CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNumber):
+                IsTarget, Score = CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score)
+                if IsTarget:
+                    NumbersAllowed = RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed)
+                    NumbersAllowed = FillNumbers(NumbersAllowed, TrainingGame, MaxNumber)
+        Score -= 1
+        if Targets[0] != -1:
+            GameOver = True
+        else:
+            Targets = UpdateTargets(Targets, TrainingGame, MaxTarget)
 
+        if GameOver and input('Game Over! Enter r to restart, anything else to quit: ').lower() == 'r':
+            GameOver = False
+            Score, Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber = ArgumentsCopy
+
+    print("Game over!")
+    DisplayScore(Score)
+
+def CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, Score):
+    UserInputEvaluation = EvaluateRPN(UserInputInRPN)
+    UserInputEvaluationIsATarget = False
+    if UserInputEvaluation != -1:
+        for Count in range(0, len(Targets)):
+            if Targets[Count] == UserInputEvaluation:
+                Score += 2
+                Targets[Count] = -1
+                UserInputEvaluationIsATarget = True
+    return UserInputEvaluationIsATarget, Score
 
 def RemoveNumbersUsed(UserInput, MaxNumber, NumbersAllowed):
     UserInputInRPN = ConvertToRPN(UserInput)

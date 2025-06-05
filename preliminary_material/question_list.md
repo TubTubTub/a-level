@@ -23,6 +23,8 @@
 
 # Following from wiki (https://en.wikibooks.org/wiki/A-level_Computing/AQA/Paper_1/Skeleton_program/2025)
 
+Fix the scoring bug whereby n targets cleared give you 2n-1 points instead of n points
+
 23. Fix the scoring bug whereby n targets cleared give you 2n-1 points instead of n points
 24. Modify the program so that (1) the player can use each number more than once and (2) the game does not allow repeats within the 5 numbers given
 25. Modify the program to accept input in Postfix (Reverse Polish Notation) instead of Infix
