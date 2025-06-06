@@ -32,12 +32,23 @@ def Main():
 def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
     Score = 0
     GameOver = False
-    ArgumentsCopy = [Score, Targets[::], NumbersAllowed, TrainingGame, MaxTarget, MaxNumber]
-
     while not GameOver:
         DisplayState(Targets, NumbersAllowed, Score)
-        UserInput = input("Enter an expression: ")
-        print()
+
+        if TrainingGame:
+            UserInput = input("Enter an expression (x for free clear): ")
+            print()
+
+            if UserInput == 'x':
+                NumberToClear = int(input("Enter number to clear: "))
+                print()
+
+                Targets = [-1 if x == NumberToClear else x for x in Targets]
+                continue
+        else:
+            UserInput = input("Enter an expression: ")
+            print()
+
         if CheckIfUserInputValid(UserInput):
             UserInputInRPN = ConvertToRPN(UserInput)
             if CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNumber):
@@ -50,11 +61,6 @@ def PlayGame(Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber):
             GameOver = True
         else:
             Targets = UpdateTargets(Targets, TrainingGame, MaxTarget)
-
-        if GameOver and input('Game Over! Enter r to restart, anything else to quit: ').lower() == 'r':
-            GameOver = False
-            Score, Targets, NumbersAllowed, TrainingGame, MaxTarget, MaxNumber = ArgumentsCopy
-
     print("Game over!")
     DisplayScore(Score)
 
